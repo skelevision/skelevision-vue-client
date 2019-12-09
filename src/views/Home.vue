@@ -30,7 +30,8 @@
           </form>
 
           <div class="upload-controls" v-else>
-            <div class="file-listing">              <!-- <img class="preview" ref="preview" /> -->
+            <div class="file-listing">
+              <!-- <img class="preview" ref="preview" /> -->
               <p v-if="file">{{ file.name }}</p>
               <div class="remove-container">
                 <a class="remove" v-on:click="removeFile()">X</a>
@@ -49,8 +50,6 @@
 </template>
 
 <script>
-import { HTTP } from "../http-common";
-
 export default {
   name: "home",
   data: () => ({
@@ -129,17 +128,18 @@ export default {
     submitFile() {
       const formData = new FormData();
       formData.append("file", this.file);
-      HTTP.post("upload", formData, {
-        withCredentials: true,
-        headers: {
-          "Content-Type": "multipart/form-data"
-        },
-        onUploadProgress: function(progressEvent) {
-          this.uploadPercentage = parseInt(
-            Math.round((progressEvent.loaded / progressEvent.total) * 100)
-          );
-        }.bind(this)
-      })
+      this.$http
+        .post("upload", formData, {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "multipart/form-data"
+          },
+          onUploadProgress: function(progressEvent) {
+            this.uploadPercentage = parseInt(
+              Math.round((progressEvent.loaded / progressEvent.total) * 100)
+            );
+          }.bind(this)
+        })
         .then(response => {
           this.$router.push("process");
         })
