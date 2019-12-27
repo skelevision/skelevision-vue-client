@@ -75,7 +75,7 @@
                 <v-list-item-title>View Relationships</v-list-item-title>
               </v-list-item-content>
             </template>
-            <v-list-item-group v-model="curRel" v-on:change="computeLinks">
+            <v-list-item-group v-model="curRel">
               <v-list-item v-for="(rel, i) in relationships" :key="i">
                 <v-list-item-title v-text="rel[0]"></v-list-item-title>
               </v-list-item>
@@ -94,7 +94,7 @@
       <v-container class="fill-height" fluid>
         <v-row align="center" justify="center">
           <v-col>
-            <graph-component v-if="data" :nodes="activeNodes" :links="visibleLinks" />
+            <graph-component :nodes="activeNodes" :links="visibleLinks" />
           </v-col>
         </v-row>
       </v-container>
@@ -109,15 +109,135 @@ export default {
   data: () => ({
     // UI
     drawer: null,
-    fab: false,
 
     // Data
-    data: null,
+    data: {
+      relationships: {
+        alwaysAfter: [
+          ["b", "[]"],
+          ["e", "c"],
+          ["a", "c"],
+          ["b", "d"],
+          ["[>", "b"],
+          ["[>", "[]"],
+          ["c", "d"],
+          ["f", "d"],
+          ["d", "[]"],
+          ["[>", "c"],
+          ["f", "[]"],
+          ["f", "b"],
+          ["a", "d"],
+          ["e", "[]"],
+          ["a", "b"],
+          ["e", "b"],
+          ["a", "[]"],
+          ["e", "d"],
+          ["[>", "a"],
+          ["f", "c"],
+          ["e", "f"],
+          ["c", "[]"],
+          ["[>", "d"]
+        ],
+        alwaysBefore: [
+          ["[]", "[>"],
+          ["e", "c"],
+          ["f", "[>"],
+          ["[]", "a"],
+          ["d", "c"],
+          ["c", "[>"],
+          ["[]", "c"],
+          ["d", "b"],
+          ["a", "[>"],
+          ["f", "b"],
+          ["d", "[>"],
+          ["c", "a"],
+          ["e", "b"],
+          ["e", "[>"],
+          ["f", "c"],
+          ["b", "a"],
+          ["e", "a"],
+          ["[]", "b"],
+          ["[]", "d"],
+          ["b", "[>"],
+          ["f", "e"],
+          ["d", "a"],
+          ["f", "a"]
+        ],
+        dependency: [
+          ["b", "c"],
+          ["a", "b"],
+          ["a", "c"],
+          ["[>", "[>"],
+          ["b", "d"],
+          ["[>", "a"],
+          ["b", "e"],
+          ["f", "c"],
+          ["c", "d"],
+          ["e", "f"],
+          ["c", "b"],
+          ["[]", "[]"],
+          ["d", "[]"],
+          ["c", "e"],
+          ["f", "b"]
+        ],
+        equivalence: [
+          ["a", "d"],
+          ["[]", "[>"],
+          ["b", "c"],
+          ["e", "[]"],
+          ["[>", "f"],
+          ["f", "[>"],
+          ["e", "[>"],
+          ["[>", "[]"],
+          ["[]", "e"],
+          ["[>", "e"],
+          ["e", "f"],
+          ["c", "b"],
+          ["f", "e"],
+          ["d", "a"],
+          ["f", "[]"],
+          ["[]", "f"]
+        ],
+        neverTogether: []
+      },
+      statistics: {
+        max: {
+          "[>": 2,
+          "[]": 2,
+          a: 1,
+          b: 3,
+          c: 3,
+          d: 1,
+          e: 2,
+          f: 2
+        },
+        min: {
+          "[>": 2,
+          "[]": 2,
+          a: 1,
+          b: 1,
+          c: 1,
+          d: 1,
+          e: 0,
+          f: 0
+        },
+        sum: {
+          "[>": 26,
+          "[]": 26,
+          a: 13,
+          b: 20,
+          c: 20,
+          d: 13,
+          e: 7,
+          f: 7
+        }
+      }
+    },
 
     // Nodes (Labels)
-    labels: [],
+    labels: ["[>", "[]", "a", "b", "c", "d", "e", "f"],
     filters: [],
-    visibleActivities: [],
+    visibleActivities: ["[>", "[]", "a", "b", "c", "d", "e", "f"],
 
     // Relationships
     relationships: [
@@ -127,8 +247,7 @@ export default {
       ["Always Before", "alwaysBefore"],
       ["Dependecy", "dependency"]
     ],
-    curRel: 0,
-    visibleLinks: []
+    curRel: 0
   }),
   methods: {
     mine() {
@@ -152,7 +271,6 @@ export default {
         .then(response => {
           if (response.status == 200) {
             this.data = response.data;
-            this.computeLinks();
           }
         })
         .catch(() => {
@@ -177,14 +295,6 @@ export default {
           console.log("FAILURE!!");
         });
     },
-    computeLinks() {
-      this.visibleLinks = [];
-      if (this.data) {
-        const i = this.relationships[this.curRel][1];
-        this.visibleLinks = this.data.relationships[i];
-      }
-      return this.visibleLinks;
-    }
   },
   created: function() {
     this.getLabels();
@@ -199,6 +309,14 @@ export default {
       }
       // TODO: Add node information
       return nodes;
+    },
+    visibleLinks: function() {
+      var links = [];
+      if (this.data) {
+        const i = this.relationships[this.curRel][1];
+        links = this.data.relationships[i];
+      }
+      return links;
     }
   },
   components: { GraphComponent }
