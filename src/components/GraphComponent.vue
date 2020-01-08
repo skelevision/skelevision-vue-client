@@ -65,11 +65,11 @@ export default {
       this.graph.graphData(this.graphData);
     },
     updateData() {
-      const nodes = this.nodes.map(i => ({
+      const nodes = this.nodes.filter(i => this.nodeStatistics[i]).map(i => ({
         id: i,
         stats: this.nodeStatistics[i]
       }));
-
+      debugger;
       const links = this.links
         .filter(
           link => this.nodes.includes(link[0]) && this.nodes.includes(link[1])

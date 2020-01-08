@@ -145,15 +145,16 @@ export default {
         }
 
         if (this.filters[i] === 2) {
-          payload.requiredActivities.push(this.labels[i]);
+          payload.forbiddenActivities.push(this.labels[i]);
         }
       }
-
+      debugger;
       this.$http
         .post("mine", payload)
         .then(response => {
           if (response.status == 200) {
             this.data = response.data;
+            debugger;
           }
         })
         .catch(() => {
@@ -172,6 +173,7 @@ export default {
               this.filters.push(1);
               this.visibleActivities.push(true);
             }
+            debugger;
           }
         })
         .catch(() => {
