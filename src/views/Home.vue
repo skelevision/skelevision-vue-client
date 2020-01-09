@@ -168,7 +168,7 @@ section.upload
   height: 300px
   position: relative
   border-radius: 40px
-  border: 4px #ffffff dotted
+  border: 4px #000000 dotted
   padding: 10px 30px
 
 form
