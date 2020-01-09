@@ -4,97 +4,93 @@
       <v-list dense nav>
         <v-subheader>Actions</v-subheader>
         <v-list-item-group color="primary">
-          <v-list-item @click="mine">
-            <!-- <v-list-item-icon>
-            <v-icon v-text="'item.icon'"></v-icon>
-            </v-list-item-icon>-->
-
-              <v-list-item-title v-text="'Mine'"></v-list-item-title>
-            <v-list-item-content>
-            </v-list-item-content>
-          </v-list-item>
           <v-list-item>
-            <router-link :to="{name: 'home'}">
-              <!-- <v-list-item-icon>
-            <v-icon v-text="'item.icon'"></v-icon>
-              </v-list-item-icon>-->
+            <v-list-item-icon>
+              <v-icon>mdi-upload-outline</v-icon>
+            </v-list-item-icon>
+            <v-list-item-title v-text="'Upload New File'"></v-list-item-title>
+            <v-list-item-content></v-list-item-content>
+          </v-list-item>
 
-              <v-list-item-content>
-                <v-list-item-title v-text="'Upload'"></v-list-item-title>
-              </v-list-item-content>
-            </router-link>
+          <v-list-item @click="mine">
+            <v-list-item-icon>
+              <v-icon>mdi-pickaxe</v-icon>
+            </v-list-item-icon>
+
+            <v-list-item-title v-text="'Mine'"></v-list-item-title>
+            <v-list-item-content></v-list-item-content>
           </v-list-item>
         </v-list-item-group>
-        <v-subheader>Settings</v-subheader>
-        <v-list-group prepend-icon="mdi-card-search">
+
+        <v-divider></v-divider>
+        <v-subheader>Active Relationship</v-subheader>
+        <v-list-item-group v-model="curRel" color="primary">
+          <v-list-item v-for="(rel, i) in relationships" :key="i">
+            <v-list-item-title v-text="rel[0]"></v-list-item-title>
+          </v-list-item>
+        </v-list-item-group>
+
+        <v-divider></v-divider>
+        <v-subheader>Configuration</v-subheader>
+        <v-list-group color="primary" prepend-icon="mdi-filter">
           <template v-slot:activator>
-            <v-list-item-title>Search</v-list-item-title>
+            <v-list-item-title>Filters</v-list-item-title>
+          </template>
+          <v-list-item v-for="(activity, i) in labels" :key="i" link>
+            <v-list-item-title v-text="activity"></v-list-item-title>
+
+            <v-btn-toggle mandatory rounded dense v-model="filters[i]">
+              <v-btn>
+                <v-icon>mdi-asterisk</v-icon>
+              </v-btn>
+
+              <v-btn>
+                <v-icon>mdi-adjust</v-icon>
+              </v-btn>
+
+              <v-btn>
+                <v-icon>mdi-cancel</v-icon>
+              </v-btn>
+            </v-btn-toggle>
+          </v-list-item>
+        </v-list-group>
+
+        <v-list-group color="primary" prepend-icon="mdi-ticket">
+          <template v-slot:activator>
+            <v-list-item-content>
+              <v-list-item-title>Activities</v-list-item-title>
+            </v-list-item-content>
           </template>
 
-          <v-list-group no-action sub-group>
-            <template v-slot:activator>
-              <v-list-item-title>Filters</v-list-item-title>
-            </template>
-            <v-list-item v-for="(activity, i) in labels" :key="i" link>
-              <v-list-item-title v-text="activity"></v-list-item-title>
-
-              <v-btn-toggle mandatory rounded dense v-model="filters[i]">
-                <v-btn>
-                  <v-icon>mdi-asterisk</v-icon>
-                </v-btn>
-
-                <v-btn>
-                  <v-icon>mdi-adjust</v-icon>
-                </v-btn>
-
-                <v-btn>
-                  <v-icon>mdi-cancel</v-icon>
-                </v-btn>
-              </v-btn-toggle>
-            </v-list-item>
-          </v-list-group>
-
-          <v-list-group no-action sub-group>
-            <template v-slot:activator>
-              <v-list-item-content>
-                <v-list-item-title>View Activities</v-list-item-title>
-              </v-list-item-content>
-            </template>
-
-            <v-list-item v-for="(a, i) in labels" :key="i" link>
-              <v-list-item-title v-text="a"></v-list-item-title>
-              <v-list-item-action>
-                <v-checkbox v-model="visibleActivities[i]" color="primary"></v-checkbox>
-              </v-list-item-action>
-            </v-list-item>
-          </v-list-group>
-
-          <v-list-group sub-group>
-            <template v-slot:activator>
-              <v-list-item-content>
-                <v-list-item-title>View Relationships</v-list-item-title>
-              </v-list-item-content>
-            </template>
-            <v-list-item-group v-model="curRel">
-              <v-list-item v-for="(rel, i) in relationships" :key="i">
-                <v-list-item-title v-text="rel[0]"></v-list-item-title>
-              </v-list-item>
-            </v-list-item-group>
-          </v-list-group>
+          <v-list-item v-for="(a, i) in labels" :key="i" link>
+            <v-list-item-title v-text="a"></v-list-item-title>
+            <v-list-item-action>
+              <v-checkbox v-model="visibleActivities[i]" color="primary"></v-checkbox>
+            </v-list-item-action>
+          </v-list-item>
         </v-list-group>
       </v-list>
     </v-navigation-drawer>
 
     <v-app-bar app clipped-left>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <v-toolbar-title>skelevision</v-toolbar-title>
+      <router-link :to="{name: 'home'}">
+        <v-toolbar-title>skelevision</v-toolbar-title>
+      </router-link>
+      <v-spacer></v-spacer>
+
+      <v-btn href="https://github.com/skelevision/skelevision" target="_blank" text>
+        <span class="mr-2">Latest Release</span>
+        <v-icon>mdi-open-in-new</v-icon>
+      </v-btn>
     </v-app-bar>
 
     <v-content class="main-content">
       <v-container class="fill-height" fluid>
         <v-row align="center" justify="center">
           <v-col>
-            <graph-component v-if="data"
+            <graph-component
+              v-if="data"
               :nodes="activeNodes"
               :links="visibleLinks"
               :nodeStatistics="nodeStats"
@@ -216,6 +212,10 @@ export default {
 </script>
 
 <style lang="sass" scoped>
+a
+  text-decoration: none
+  color: rgba(0, 0, 0, 0.87)
+
 span.wrapper
   height: 100%
 
