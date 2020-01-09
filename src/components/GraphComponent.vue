@@ -39,7 +39,8 @@ export default {
     constructGraph() {
       this.graph = ForceGraph()(document.getElementById("graph"))
         //.linkDirectionalArrowLength(10)
-        .linkWidth(0)
+        .linkWidth(0.1)
+        .linkColor('#fafafa')
         .nodeCanvasObject(({ id, stats, x, y }, ctx) => {
           ctx.fillStyle = "#555555";
           ctx.fillRect(x - 18, y - 16, 36, 16);
@@ -60,14 +61,59 @@ export default {
           ctx.fillText(stats.min, x, y - 4);
           ctx.fillText(stats.max, x + 12, y -4);
         })
+
         .linkCanvasObjectMode(() => 'after')
-        .linkCanvasObject((link, ctx) => {
+
+        .linkCanvasObject((link, ctx) => {            
+            //always after rectangle
+            //ctx.fillStyle = '#500555';
+            //ctx.fillRect(link.source.x-2, link.source.y, 4, 4);
+
+            //always after triangle
+            //ctx.fillStyle = '#555555';
+            //ctx.beginPath(); 
+            //ctx.moveTo(link.target.x-2, link.target.y+8);  
+            //ctx.lineTo(link.target.x+2, link.target.y+8); 
+            //ctx.lineTo(link.target.x, link.target.y+4);
+            //ctx.fill();
+
+            //always before rectangle
+            //ctx.fillStyle = '#500555';
+            //ctx.fillRect(link.target.x-2, link.target.y, 4, 4);
+
+            //always before triangle
+            //ctx.fillStyle = '#555555';
+            //ctx.beginPath(); 
+            //ctx.moveTo(link.target.x-2, link.target.y+8);  
+            //ctx.lineTo(link.target.x+2, link.target.y+8); 
+            //ctx.lineTo(link.target.x, link.target.y+4);
+            //ctx.fill();
+
+            //never together rectangles
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(link.target.x-2, link.target.y, 4, 4);
+            ctx.fillRect(link.source.x-2, link.source.y, 4, 4);
+
+            //directly follows circle
+            //ctx.fillStyle = '#500555';
+            //ctx.beginPath(); 
+            //ctx.arc(link.source.x, link.source.y+2, 2.5, 0, 2 * Math.PI, false); 
+            //ctx.fill();
+
+            //cirectly follows triangle
+            //ctx.fillStyle = '#555555';
+            //ctx.beginPath(); 
+            //ctx.moveTo(link.target.x-2, link.target.y+8);  
+            //ctx.lineTo(link.target.x+2, link.target.y+8); 
+            //ctx.lineTo(link.target.x, link.target.y+4);
+            //ctx.fill();
+
+            //draw the actual link
             ctx.lineWidth = 0.5;
-            //ctx.setLineDash([3, 3]);
-            ctx.fillStyle = '#e33636';
-            ctx.fillRect(link.source.x-2, link.source.y, 3, 3);
-            ctx.moveTo(link.source.x, link.source.y);
-            ctx.lineTo(link.target.x, link.target.y);
+            ctx.strokeStyle = '#555555';
+            ctx.beginPath();
+            ctx.moveTo(link.source.x, link.source.y+8);
+            ctx.lineTo(link.target.x, link.target.y+8);
             ctx.stroke();
         })
         .nodeLabel("id");
