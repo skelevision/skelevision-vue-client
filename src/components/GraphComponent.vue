@@ -33,6 +33,10 @@ export default {
       default: function() {
         return {};
       }
+    },
+    rel: {
+      type: String,
+      default: ""
     }
   },
   methods: {
@@ -40,7 +44,7 @@ export default {
       this.graph = ForceGraph()(document.getElementById("graph"))
         //.linkDirectionalArrowLength(10)
         .linkWidth(0.1)
-        .linkColor('#fafafa')
+        .linkColor("#fafafa")
         .nodeCanvasObject(({ id, stats, x, y }, ctx) => {
           ctx.fillStyle = "#555555";
           ctx.fillRect(x - 18, y - 16, 36, 16);
@@ -51,7 +55,7 @@ export default {
           ctx.fillText(id, x, y - 12);
 
           ctx.fillStyle = "#e33636";
-          ctx.fillRect(x - 18, y-8, 36, 8);
+          ctx.fillRect(x - 18, y - 8, 36, 8);
 
           ctx.fillStyle = "#ffffff";
           ctx.font = "4px Sans-Serif";
@@ -59,62 +63,64 @@ export default {
           ctx.textBaseline = "middle";
           ctx.fillText(stats.sum, x - 12, y - 4);
           ctx.fillText(stats.min, x, y - 4);
-          ctx.fillText(stats.max, x + 12, y -4);
+          ctx.fillText(stats.max, x + 12, y - 4);
         })
 
-        .linkCanvasObjectMode(() => 'after')
+        .linkCanvasObjectMode(() => "after")
 
-        .linkCanvasObject((link, ctx) => {            
-            //always after rectangle
-            //ctx.fillStyle = '#500555';
-            //ctx.fillRect(link.source.x-2, link.source.y, 4, 4);
+        .linkCanvasObject((link, ctx) => {
+          //always after rectangle
+          //ctx.fillStyle = '#500555';
+          //ctx.fillRect(link.source.x-2, link.source.y, 4, 4);
 
-            //always after triangle
-            //ctx.fillStyle = '#555555';
-            //ctx.beginPath(); 
-            //ctx.moveTo(link.target.x-2, link.target.y+8);  
-            //ctx.lineTo(link.target.x+2, link.target.y+8); 
-            //ctx.lineTo(link.target.x, link.target.y+4);
-            //ctx.fill();
+          //always after triangle
+          //ctx.fillStyle = '#555555';
+          //ctx.beginPath();
+          //ctx.moveTo(link.target.x-2, link.target.y+8);
+          //ctx.lineTo(link.target.x+2, link.target.y+8);
+          //ctx.lineTo(link.target.x, link.target.y+4);
+          //ctx.fill();
 
-            //always before rectangle
-            //ctx.fillStyle = '#500555';
-            //ctx.fillRect(link.target.x-2, link.target.y, 4, 4);
+          //always before rectangle
+          //ctx.fillStyle = '#500555';
+          //ctx.fillRect(link.target.x-2, link.target.y, 4, 4);
 
-            //always before triangle
-            //ctx.fillStyle = '#555555';
-            //ctx.beginPath(); 
-            //ctx.moveTo(link.target.x-2, link.target.y+8);  
-            //ctx.lineTo(link.target.x+2, link.target.y+8); 
-            //ctx.lineTo(link.target.x, link.target.y+4);
-            //ctx.fill();
+          //always before triangle
+          //ctx.fillStyle = '#555555';
+          //ctx.beginPath();
+          //ctx.moveTo(link.target.x-2, link.target.y+8);
+          //ctx.lineTo(link.target.x+2, link.target.y+8);
+          //ctx.lineTo(link.target.x, link.target.y+4);
+          //ctx.fill();
 
-            //never together rectangles
-            ctx.fillStyle = '#000000';
-            ctx.fillRect(link.target.x-2, link.target.y, 4, 4);
-            ctx.fillRect(link.source.x-2, link.source.y, 4, 4);
+          //never together rectangles
+          if (this.rel === "neverTogether") { 
+            ctx.fillStyle = "#000000";
+            ctx.fillRect(link.target.x - 2, link.target.y, 4, 4);
+            ctx.fillRect(link.source.x - 2, link.source.y, 4, 4);
+          }
 
-            //directly follows circle
-            //ctx.fillStyle = '#500555';
-            //ctx.beginPath(); 
-            //ctx.arc(link.source.x, link.source.y+2, 2.5, 0, 2 * Math.PI, false); 
-            //ctx.fill();
+          //directly follows circle
+          //ctx.fillStyle = '#500555';
+          //ctx.beginPath();
+          //ctx.arc(link.source.x, link.source.y+2, 2.5, 0, 2 * Math.PI, false);
+          //ctx.fill();
 
-            //cirectly follows triangle
-            //ctx.fillStyle = '#555555';
-            //ctx.beginPath(); 
-            //ctx.moveTo(link.target.x-2, link.target.y+8);  
-            //ctx.lineTo(link.target.x+2, link.target.y+8); 
-            //ctx.lineTo(link.target.x, link.target.y+4);
-            //ctx.fill();
+          //cirectly follows triangle
+          //ctx.fillStyle = '#555555';
+          //ctx.beginPath();
+          //ctx.moveTo(link.target.x-2, link.target.y+8);
+          //ctx.lineTo(link.target.x+2, link.target.y+8);
+          //ctx.lineTo(link.target.x, link.target.y+4);
+          //ctx.fill();
 
-            //draw the actual link
-            ctx.lineWidth = 0.5;
-            ctx.strokeStyle = '#555555';
-            ctx.beginPath();
-            ctx.moveTo(link.source.x, link.source.y+8);
-            ctx.lineTo(link.target.x, link.target.y+8);
-            ctx.stroke();
+          //draw the actual link
+          ctx.lineWidth = 0.5;
+          ctx.strokeStyle = "#555555";
+          ctx.beginPath();
+          ctx.moveTo(link.source.x, link.source.y + 8);
+          ctx.lineTo(link.target.x, link.target.y + 8);
+          ctx.stroke();
         })
         .nodeLabel("id");
     },
@@ -122,10 +128,12 @@ export default {
       this.graph.graphData(this.graphData);
     },
     updateData() {
-      const nodes = this.nodes.filter(i => this.nodeStatistics[i]).map(i => ({
-        id: i,
-        stats: this.nodeStatistics[i]
-      }));
+      const nodes = this.nodes
+        .filter(i => this.nodeStatistics[i])
+        .map(i => ({
+          id: i,
+          stats: this.nodeStatistics[i]
+        }));
       debugger;
       const links = this.links
         .filter(
@@ -155,6 +163,9 @@ export default {
     nodes: function() {
       this.updateData();
       this.updateGraph();
+    },
+    rel: function() {
+      console.log(this.rel);
     }
   }
 };

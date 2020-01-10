@@ -94,6 +94,7 @@
               :nodes="activeNodes"
               :links="visibleLinks"
               :nodeStatistics="nodeStats"
+              :rel="relationships[curRel][1]"
             />
           </v-col>
         </v-row>
