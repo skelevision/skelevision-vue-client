@@ -19,20 +19,14 @@
 
             <v-list-item-title v-text="'Mine'"></v-list-item-title>
             <v-list-item-content></v-list-item-content>
-								  
           </v-list-item>
         </v-list-item-group>
-											  
-									 
-												  
-									
 
         <v-divider></v-divider>
         <v-subheader>Active Relationship</v-subheader>
         <v-list-item-group v-model="curRel" color="primary">
           <v-list-item v-for="(rel, i) in relationships" :key="i">
             <v-list-item-title v-text="rel[0]"></v-list-item-title>
-						  
           </v-list-item>
         </v-list-item-group>
 
@@ -41,19 +35,17 @@
         <v-list-group color="primary" prepend-icon="mdi-filter">
           <template v-slot:activator>
             <v-list-item-title>Filters</v-list-item-title>
+
           </template>
           <v-list-item v-for="(activity, i) in labels" :key="i" link>
             <v-list-item-title v-text="activity"></v-list-item-title>
 
             <v-btn-toggle mandatory rounded dense v-model="filters[i]">
-									   
               <v-btn>
                 <v-icon>mdi-asterisk</v-icon>
-																	   
               </v-btn>
 
               <v-btn>
-					   
                 <v-icon>mdi-adjust</v-icon>
               </v-btn>
 
@@ -70,34 +62,13 @@
               <v-list-item-title>Activities</v-list-item-title>
             </v-list-item-content>
           </template>
-
-											
-									   
-								   
-																	  
-									
-					   
-
           <v-list-item v-for="(a, i) in labels" :key="i" link>
             <v-list-item-title v-text="a"></v-list-item-title>
             <v-list-item-action>
               <v-checkbox v-model="visibleActivities[i]" color="primary"></v-checkbox>
             </v-list-item-action>
-						  
-						 
 
-								  
-									   
-								   
-																		 
-									
-					   
-												
-																	  
-																	   
           </v-list-item>
-								
-						 
         </v-list-group>
       </v-list>
     </v-navigation-drawer>
@@ -246,6 +217,7 @@ export default {
 a
   text-decoration: none
   color: rgba(0, 0, 0, 0.87)
+  
 span.wrapper
   height: 100%
 
