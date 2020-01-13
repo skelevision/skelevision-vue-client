@@ -33,6 +33,10 @@ export default {
       default: function() {
         return {};
       }
+    },
+    rel: {
+      type: String,
+      default: ""
     }
   },
   methods: {
@@ -40,7 +44,7 @@ export default {
       this.graph = ForceGraph()(document.getElementById("graph"))
         //.linkDirectionalArrowLength(10)
         .linkWidth(0.1)
-        .linkColor('#fafafa')
+        .linkColor("#fafafa")
         .nodeCanvasObject(({ id, stats, x, y }, ctx) => {
           ctx.fillStyle = "#555555";
           ctx.fillRect(x - 18, y - 16, 36, 16);
@@ -51,7 +55,7 @@ export default {
           ctx.fillText(id, x, y - 12);
 
           ctx.fillStyle = "#e33636";
-          ctx.fillRect(x - 18, y-8, 36, 8);
+          ctx.fillRect(x - 18, y - 8, 36, 8);
 
           ctx.fillStyle = "#ffffff";
           ctx.font = "4px Sans-Serif";
@@ -59,7 +63,7 @@ export default {
           ctx.textBaseline = "middle";
           ctx.fillText(stats.sum, x - 12, y - 4);
           ctx.fillText(stats.min, x, y - 4);
-          ctx.fillText(stats.max, x + 12, y -4);
+          ctx.fillText(stats.max, x + 12, y - 4);
         })
 
         .linkCanvasObjectMode(() => 'after')
@@ -166,10 +170,12 @@ export default {
       this.graph.graphData(this.graphData);
     },
     updateData() {
-      const nodes = this.nodes.filter(i => this.nodeStatistics[i]).map(i => ({
-        id: i,
-        stats: this.nodeStatistics[i]
-      }));
+      const nodes = this.nodes
+        .filter(i => this.nodeStatistics[i])
+        .map(i => ({
+          id: i,
+          stats: this.nodeStatistics[i]
+        }));
       debugger;
       const links = this.links
         .filter(
@@ -199,6 +205,9 @@ export default {
     nodes: function() {
       this.updateData();
       this.updateGraph();
+    },
+    rel: function() {
+      console.log(this.rel);
     }
   }
 };
