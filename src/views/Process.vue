@@ -35,6 +35,7 @@
         <v-list-group color="primary" prepend-icon="mdi-filter">
           <template v-slot:activator>
             <v-list-item-title>Filters</v-list-item-title>
+
           </template>
           <v-list-item v-for="(activity, i) in labels" :key="i" link>
             <v-list-item-title v-text="activity"></v-list-item-title>
@@ -61,12 +62,12 @@
               <v-list-item-title>Activities</v-list-item-title>
             </v-list-item-content>
           </template>
-
           <v-list-item v-for="(a, i) in labels" :key="i" link>
             <v-list-item-title v-text="a"></v-list-item-title>
             <v-list-item-action>
               <v-checkbox v-model="visibleActivities[i]" color="primary"></v-checkbox>
             </v-list-item-action>
+
           </v-list-item>
         </v-list-group>
       </v-list>
@@ -94,6 +95,8 @@
               :nodes="activeNodes"
               :links="visibleLinks"
               :nodeStatistics="nodeStats"
+              :linkStatistics="linkStats"
+              :rel="relationships[curRel][1]"
             />
           </v-col>
         </v-row>
@@ -144,13 +147,11 @@ export default {
           payload.forbiddenActivities.push(this.labels[i]);
         }
       }
-      debugger;
       this.$http
         .post("mine", payload)
         .then(response => {
           if (response.status == 200) {
             this.data = response.data;
-            debugger;
           }
         })
         .catch(() => {
@@ -169,7 +170,6 @@ export default {
               this.filters.push(1);
               this.visibleActivities.push(true);
             }
-            debugger;
           }
         })
         .catch(() => {
@@ -205,7 +205,13 @@ export default {
         return this.data.statistics.node;
       }
       return {};
-    }
+    },
+    linkStats: function() {
+      if (this.data) {
+        return this.data.statistics.link;
+      }
+      return {};
+    },
   },
   components: { GraphComponent }
 };
@@ -215,7 +221,7 @@ export default {
 a
   text-decoration: none
   color: rgba(0, 0, 0, 0.87)
-
+  
 span.wrapper
   height: 100%
 
