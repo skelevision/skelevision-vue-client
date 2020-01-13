@@ -34,6 +34,12 @@ export default {
         return {};
       }
     },
+    linkStatistics: {
+      type: Object,
+      default: function() {
+        return {};
+      }
+    },
     rel: {
       type: String,
       default: ""
@@ -66,82 +72,98 @@ export default {
           ctx.fillText(stats.max, x + 12, y - 4);
         })
 
-        .linkCanvasObjectMode(() => 'after')
+        .linkCanvasObjectMode(() => "after")
 
-        .linkCanvasObject((link, ctx) => {            
+        .linkCanvasObject((link, ctx) => {
+          if (this.rel == "alwaysAfter") {
             //always after rectangle
-            ctx.fillStyle = '#500555';
-            ctx.fillRect(link.source.x-7, link.source.y, 4, 4);
+            ctx.fillStyle = "#500555";
+            ctx.fillRect(link.source.x - 7, link.source.y, 4, 4);
 
             //always after triangle
-            ctx.fillStyle = '#555555';
-            ctx.beginPath(); 
-            ctx.moveTo(link.target.x-7, link.target.y+8);  
-            ctx.lineTo(link.target.x-3, link.target.y+8); 
-            ctx.lineTo(link.target.x-5, link.target.y+4);
+            ctx.fillStyle = "#555555";
+            ctx.beginPath();
+            ctx.moveTo(link.target.x - 7, link.target.y + 8);
+            ctx.lineTo(link.target.x - 3, link.target.y + 8);
+            ctx.lineTo(link.target.x - 5, link.target.y + 4);
             ctx.fill();
 
             //always after draw the actual link
             ctx.lineWidth = 0.5;
-            ctx.strokeStyle = '#555555';
+            ctx.strokeStyle = "#555555";
             ctx.beginPath();
-            ctx.moveTo(link.source.x-5, link.source.y+8);
-            ctx.lineTo(link.target.x-5, link.target.y+8);
+            ctx.moveTo(link.source.x - 5, link.source.y + 8);
+            ctx.lineTo(link.target.x - 5, link.target.y + 8);
             ctx.stroke();
+          }
 
+          if (this.rel == "alwaysBefore") {
             //always before rectangle
-            ctx.fillStyle = '#500555';
-            ctx.fillRect(link.target.x+3, link.target.y, 4, 4);
+            ctx.fillStyle = "#500555";
+            ctx.fillRect(link.target.x + 3, link.target.y, 4, 4);
 
             //always before triangle
-            ctx.fillStyle = '#555555';
-            ctx.beginPath(); 
-            ctx.moveTo(link.target.x+3, link.target.y+8);  
-            ctx.lineTo(link.target.x+7, link.target.y+8); 
-            ctx.lineTo(link.target.x+5, link.target.y+4);
+            ctx.fillStyle = "#555555";
+            ctx.beginPath();
+            ctx.moveTo(link.target.x + 3, link.target.y + 8);
+            ctx.lineTo(link.target.x + 7, link.target.y + 8);
+            ctx.lineTo(link.target.x + 5, link.target.y + 4);
             ctx.fill();
 
             //always before draw the actual link
             ctx.lineWidth = 0.5;
-            ctx.strokeStyle = '#555555';
+            ctx.strokeStyle = "#555555";
             ctx.beginPath();
-            ctx.moveTo(link.source.x+5, link.source.y+8);
-            ctx.lineTo(link.target.x+5, link.target.y+8);
+            ctx.moveTo(link.source.x + 5, link.source.y + 8);
+            ctx.lineTo(link.target.x + 5, link.target.y + 8);
             ctx.stroke();
+          }
 
+          if (this.rel == "neverTogether") {
             //never together rectangles
-            ctx.fillStyle = '#000000';
-            ctx.fillRect(link.target.x-12, link.target.y, 4, 4);
-            ctx.fillRect(link.source.x-12, link.source.y, 4, 4);
+            ctx.fillStyle = "#000000";
+            ctx.fillRect(link.target.x - 12, link.target.y, 4, 4);
+            ctx.fillRect(link.source.x - 12, link.source.y, 4, 4);
 
             //never together draw the actual link
             ctx.lineWidth = 0.5;
-            ctx.strokeStyle = '#555555';
+            ctx.strokeStyle = "#555555";
             ctx.beginPath();
-            ctx.moveTo(link.source.x-10, link.source.y+4);
-            ctx.lineTo(link.target.x-10, link.target.y+4);
+            ctx.moveTo(link.source.x - 10, link.source.y + 4);
+            ctx.lineTo(link.target.x - 10, link.target.y + 4);
             ctx.stroke();
+          }
 
+          if (this.rel == "dependency") {
             //directly follows circle
-            ctx.fillStyle = '#500555';
-            ctx.beginPath(); 
-            ctx.arc(link.source.x, link.source.y+2, 2.5, 0, 2 * Math.PI, false); 
+            ctx.fillStyle = "#500555";
+            ctx.beginPath();
+            ctx.arc(
+              link.source.x,
+              link.source.y + 2,
+              2.5,
+              0,
+              2 * Math.PI,
+              false
+            );
             ctx.fill();
 
             //directly follows triangle
-            ctx.fillStyle = '#555555';
-            ctx.beginPath(); 
-            ctx.moveTo(link.target.x-2, link.target.y+8);  
-            ctx.lineTo(link.target.x+2, link.target.y+8); 
-            ctx.lineTo(link.target.x, link.target.y+4);
+            ctx.fillStyle = "#555555";
+            ctx.beginPath();
+            ctx.moveTo(link.target.x - 2, link.target.y + 8);
+            ctx.lineTo(link.target.x + 2, link.target.y + 8);
+            ctx.lineTo(link.target.x, link.target.y + 4);
             ctx.fill();
 
             //directly follows text
             const start = link.source;
             const end = link.target;
-            const textPos = Object.assign(...['x', 'y'].map(c => ({
-            [c]: start[c] + (end[c] - start[c]) / 2 // calc middle point
-            })));
+            const textPos = Object.assign(
+              ...["x", "y"].map(c => ({
+                [c]: start[c] + (end[c] - start[c]) / 2 // calc middle point
+              }))
+            );
             const relLink = { x: end.x - start.x, y: end.y - start.y };
             let textAngle = Math.atan2(relLink.y, relLink.x);
             if (textAngle > Math.PI / 2) textAngle = -(Math.PI - textAngle);
@@ -150,19 +172,20 @@ export default {
             ctx.save();
             ctx.translate(textPos.x, textPos.y);
             ctx.rotate(textAngle);
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
             ctx.fillStyle = "#000000";
-            ctx.fillText("Text", 0, 0);
+            ctx.fillText(link.dependency, 0, 0);
             ctx.restore();
 
             //directly follows draw the actual link
             ctx.lineWidth = 0.5;
-            ctx.strokeStyle = '#555555';
+            ctx.strokeStyle = "#555555";
             ctx.beginPath();
-            ctx.moveTo(link.source.x, link.source.y+8);
-            ctx.lineTo(link.target.x, link.target.y+8);
+            ctx.moveTo(link.source.x, link.source.y + 8);
+            ctx.lineTo(link.target.x, link.target.y + 8);
             ctx.stroke();
+          }
         })
         .nodeLabel("id");
     },
@@ -177,14 +200,27 @@ export default {
           stats: this.nodeStatistics[i]
         }));
       debugger;
-      const links = this.links
-        .filter(
-          link => this.nodes.includes(link[0]) && this.nodes.includes(link[1])
-        )
-        .map(link => ({
-          source: link[0],
-          target: link[1]
-        }));
+      let links = null;
+      if (this.rel === "dependency") {
+        links = this.links
+          .filter(
+            link => this.nodes.includes(link[0]) && this.nodes.includes(link[1])
+          )
+          .map(link => ({
+            source: link[0],
+            target: link[1],
+            dependency: this.linkStatistics[link[0]][link[1]],
+          }));
+      } else {
+        links = this.links
+          .filter(
+            link => this.nodes.includes(link[0]) && this.nodes.includes(link[1])
+          )
+          .map(link => ({
+            source: link[0],
+            target: link[1]
+          }));
+      }
 
       this.graphData = {
         nodes: nodes,

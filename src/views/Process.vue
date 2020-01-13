@@ -95,6 +95,7 @@
               :nodes="activeNodes"
               :links="visibleLinks"
               :nodeStatistics="nodeStats"
+              :linkStatistics="linkStats"
               :rel="relationships[curRel][1]"
             />
           </v-col>
@@ -146,13 +147,11 @@ export default {
           payload.forbiddenActivities.push(this.labels[i]);
         }
       }
-      debugger;
       this.$http
         .post("mine", payload)
         .then(response => {
           if (response.status == 200) {
             this.data = response.data;
-            debugger;
           }
         })
         .catch(() => {
@@ -171,7 +170,6 @@ export default {
               this.filters.push(1);
               this.visibleActivities.push(true);
             }
-            debugger;
           }
         })
         .catch(() => {
@@ -207,7 +205,13 @@ export default {
         return this.data.statistics.node;
       }
       return {};
-    }
+    },
+    linkStats: function() {
+      if (this.data) {
+        return this.data.statistics.link;
+      }
+      return {};
+    },
   },
   components: { GraphComponent }
 };
