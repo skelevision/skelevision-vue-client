@@ -4,7 +4,7 @@
       <v-list dense nav>
         <v-subheader>Actions</v-subheader>
         <v-list-item-group color="primary">
-          <v-list-item>
+          <v-list-item @click="toUpload">
             <v-list-item-icon>
               <v-icon>mdi-upload-outline</v-icon>
             </v-list-item-icon>
@@ -175,6 +175,9 @@ export default {
         .catch(() => {
           console.log("FAILURE!!");
         });
+    },
+    toUpload() {
+      this.$router.push({name: 'home'});
     }
   },
   created: function() {
