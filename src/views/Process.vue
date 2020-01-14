@@ -35,7 +35,6 @@
         <v-list-group color="primary" prepend-icon="mdi-filter">
           <template v-slot:activator>
             <v-list-item-title>Filters</v-list-item-title>
-
           </template>
           <v-list-item v-for="(activity, i) in labels" :key="i" link>
             <v-list-item-title v-text="activity"></v-list-item-title>
@@ -67,7 +66,6 @@
             <v-list-item-action>
               <v-checkbox v-model="visibleActivities[i]" color="primary"></v-checkbox>
             </v-list-item-action>
-
           </v-list-item>
         </v-list-group>
       </v-list>
@@ -87,34 +85,27 @@
     </v-app-bar>
 
     <v-content class="main-content">
-      <v-container class="fill-height" fluid>
-        <v-row align="center" justify="center">
-          <v-col>
-            <graph-component
-              v-if="data"
-              :nodes="activeNodes"
-              :links="visibleLinks"
-              :nodeStatistics="nodeStats"
-              :linkStatistics="linkStats"
-              :rel="relationships[curRel][1]"
-            />
-          </v-col>
-        </v-row>
-      </v-container>
+      <cytoscape-dagre-graph-component :config="config" />
     </v-content>
   </span>
 </template>
 
 <script>
 import GraphComponent from "../components/GraphComponent.vue";
+import CytoscapeDagreGraphComponent from "../components/CytoscapeDagreGraphComponent.vue";
+
 export default {
   name: "process",
+  components: { CytoscapeDagreGraphComponent },
   data: () => ({
-    // UI
-    drawer: null,
+    // Cytoscape graph config data
+    config: null,
 
-    // Data
-    data: null,
+    // skelevision graph data
+    graphData: null,
+
+    // UI
+    drawer: true,
 
     // Nodes (Labels)
     labels: [],
@@ -127,7 +118,7 @@ export default {
       ["Never Together", "neverTogether"],
       ["Always After", "alwaysAfter"],
       ["Always Before", "alwaysBefore"],
-      ["Dependecy", "dependency"]
+      ["Dependency", "dependency"]
     ],
     curRel: 0
   }),
@@ -151,7 +142,8 @@ export default {
         .post("mine", payload)
         .then(response => {
           if (response.status == 200) {
-            this.data = response.data;
+            this.curRel = 0;
+            this.graphData = response.data;
           }
         })
         .catch(() => {
@@ -177,46 +169,110 @@ export default {
         });
     },
     toUpload() {
-      this.$router.push({name: 'home'});
+      this.$router.push({ name: "home" });
+    },
+    updateCytoscapeConfig() {
+      if (!this.graphData) {
+        return;
+      }
+
+      let config = {
+        height: "100%",
+        style: [
+          {
+            selector: "node",
+            style: {
+              "background-color": "#666",
+              label: "data(label)",
+              shape: "data(type)"
+            }
+          },
+          {
+            selector: "edge",
+            style: {
+              width: 3,
+              "line-color": "#ccc",
+              "target-arrow-color": "#ccc",
+              "target-arrow-shape": "triangle",
+              "curve-style": "bezier",
+              opacity: 0.5
+            }
+          }
+        ],
+        layout: {
+          name: "dagre"
+        },
+        elements: {
+          nodes: null,
+          edges: null
+        }
+      };
+
+      // Set nodes
+      let nodes = [];
+      let visibleActivities = [];
+      for (var i = 0; i < this.labels.length; i++) {
+        if (this.visibleActivities[i]) {
+          visibleActivities.push(this.labels[i]);
+          nodes.push({
+            data: {
+              id: this.labels[i],
+              label: this.labels[i],
+              statistics: this.graphData.statistics.node[this.labels[i]],
+              type: "round-rectangle"
+            }
+          });
+        }
+      }
+      config.elements.nodes = nodes;
+
+      // Set edges
+      let edges = [];
+      const curRel = this.relationships[this.curRel][1];
+      const links = this.graphData.relationships[curRel];
+      for (var i = 0; i < links.length; i++) {
+        if (
+          visibleActivities.includes(links[i][0]) &&
+          visibleActivities.includes(links[i][1])
+        ) {
+          if (curRel === "dependency") {
+            edges.push({
+              data: {
+                source: links[i][0],
+                target: links[i][1],
+                statistics: this.graphData.statistics.link[links[i][0]][links[i][1]]
+              }
+            });
+          } else {
+            edges.push({
+              data: {
+                source: links[i][0],
+                target: links[i][1]
+              }
+            });
+          }
+        }
+      }
+      config.elements.edges = edges;
+
+      this.config = config;
     }
   },
   created: function() {
     this.getLabels();
     this.mine();
   },
-  computed: {
-    activeNodes: function() {
-      const nodes = [];
-      for (var i = 0; i < this.labels.length; i++) {
-        if (this.visibleActivities[i]) {
-          nodes.push(this.labels[i]);
-        }
-      }
-
-      return nodes;
+  watch: {
+    graphData: function() {
+      this.updateCytoscapeConfig();
     },
-    visibleLinks: function() {
-      var links = [];
-      if (this.data) {
-        const i = this.relationships[this.curRel][1];
-        links = this.data.relationships[i];
-      }
-      return links;
+    curRel: function() {
+      this.updateCytoscapeConfig();
     },
-    nodeStats: function() {
-      if (this.data) {
-        return this.data.statistics.node;
-      }
-      return {};
-    },
-    linkStats: function() {
-      if (this.data) {
-        return this.data.statistics.link;
-      }
-      return {};
-    },
-  },
-  components: { GraphComponent }
+    visibleActivities: function() {
+      this.updateCytoscapeConfig();
+    }
+  }
 };
 </script>
 
