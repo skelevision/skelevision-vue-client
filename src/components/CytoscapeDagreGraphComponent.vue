@@ -10,7 +10,10 @@
 </template>
 
 <script>
+import popper from "cytoscape-popper";
 import dagre from "cytoscape-dagre";
+import tippy from 'tippy.js';
+import 'tippy.js/dist/tippy.css';
 
 export default {
   data() {
@@ -31,10 +34,17 @@ export default {
       console.log("calling pre-config");
       // cytoscape: this is the cytoscape constructor
       cytoscape.use(dagre);
+      cytoscape.use(popper);
     },
     afterCreated(cy) {
       // cy: this is the cytoscape instance
       console.log("after created");
+      let f = this.makePopper;
+      let e = cy.elements();
+      e.forEach(function(ele) {
+        f(ele);
+      });
+
     },
     forceRerender() {
       // Remove my-component from the DOM
@@ -43,6 +53,21 @@ export default {
       this.$nextTick(() => {
         // Add the component back in
         this.renderComponent = true;
+      });
+    },
+    makePopper(ele) {
+      let ref = ele.popperRef(); // used only for positioning
+
+      ele.tippy = tippy(ref, {
+        // tippy options:
+        content: () => {
+          let content = document.createElement("div");
+
+          content.innerHTML = ele.id();
+
+          return content;
+        },
+        trigger: "manual" // probably want manual mode
       });
     }
   },
